@@ -1,9 +1,9 @@
 #ifndef HAPPYNUMBER_H
 #define HAPPYNUMBER_H
-#include <map>
 #include <string>
 #include <vector>
 
+#define MAX_N 1000
 
 class HappyNumber {
 public:

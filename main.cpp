@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "HappyNumber.h"
+
 int main(int argc, char *argv[])
 {
     char *input_fn;
@@ -10,6 +12,16 @@ int main(int argc, char *argv[])
     }
     else {
         printf("args error");
+        return -1;
+    }
+
+    try {
+        HappyNumber happy_number (input_fn);
+
+        happy_number.calculate();
+        happy_number.save_result(output_fn);
+    } catch (std::exception &e) {
+        std::cout << e.what() << std::endl;
         return -1;
     }
 
