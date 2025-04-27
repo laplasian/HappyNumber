@@ -1,64 +1,63 @@
 #include "HappyNumber.h"
 
+#include <complex>
 #include <fstream>
 #include <iostream>
-#include <unordered_set>
 
-HappyNumber::HappyNumber(const std::string &filename) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("ERROR! can`t open file: " + filename);
+std::vector<int> Parser::get_data(std::istream &stream) {
+    if (!stream.good()) {
+        std::cerr << "Parser got wrong stream" << std::endl;
     }
-
     std::string line;
+    std::vector<int> input;
 
-    while (std::getline(file, line)) {
-        int num;
-        int f = sscanf_s(line.data(), "%d", &num, 10);
-        if (f != 1 && line != std::string("")) {
-            throw std::runtime_error("ERROR! can`t read number from file: " + filename);
+    while (std::getline(stream, line)) {
+        if (!line.empty()) input.emplace_back(get_next(line));
+    }
+
+    return input;
+}
+
+int Parser::get_next(const std::string &line) {
+    std::istringstream iss(line);
+    int num;
+    std::vector<int> buff {};
+    while (iss >> num) {
+        buff.emplace_back(num);
+    }
+    if (buff.size() > 1 ) throw std::runtime_error("ERROR! wrong file: parser got more than one number in line");
+    return buff[0];
+}
+
+HappyNumber::HappyNumber(int num): num(num) {
+    if (num < 0) throw std::runtime_error("ERROR! wrong number");
+}
+
+bool HappyNumber::is_happy() const {
+    int sum = num;
+    int count = 0;
+    while (sum != 1) {
+        if (count > MAX_N) return false;
+        int buff = 0;
+        for (int i = 0; i <= std::log10(sum); i++) {
+            int digit = static_cast<int>((sum / std::pow(10, i))) % 10;
+            buff += digit * digit;
         }
-        input.push_back(num);
+        sum = buff;
+        count++;
     }
+    return sum == 1;
 }
 
-HappyNumber::~HappyNumber() = default;
 
-static int sum_of_squares_of_digits(int n) {
-    int sum = 0;
-    while (n > 0) {
-        int digit = n % 10;
-        sum += digit * digit;
-        n /= 10;
-    }
-    return sum;
-}
-
-static bool is_happy(int n) {
-    std::unordered_set<int> seen;  // Множество для отслеживания повторений
-
-    while (n != 1 && seen.find(n) == seen.end()) {
-        seen.insert(n);  // Добавляем число в множество
-        n = sum_of_squares_of_digits(n);  // Получаем сумму квадратов цифр
-    }
-
-    return n == 1;  // Если число стало 1, то оно счастливое
-}
-
-void HappyNumber::calculate() {
-    for(int i = 0; i < input.size(); i++) {
-        output.push_back(is_happy(input[i]));
-    }
-}
-
-void HappyNumber::save_result(const std::string &filename) {
-    std::fstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("ERROR! can`t open/create file: " + filename);
+void save_result(std::ostream& stream, std::vector<bool> &answ, const std::vector<int> &input) {
+    if (!stream.good()) {
+        throw std::runtime_error("ERROR! bad stream");
     }
     for (int i = 0; i < input.size(); i++) {
-        std::string result = output[i] ? "true" : "false";
-        file << input[i] << " - " << result << std::endl;
+        std::string result = answ[i] ? "true" : "false";
+        stream << input[i] << " - " << result << std::endl;
     }
-    file.close();
 }
+
+
