@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
         auto numbers = Parser::get_data(in_stream);
         in_stream.close();
         std::vector<bool> answ = {};
-        for (int num: numbers) {
-            HappyNumber happy(num);
+        for (auto num: numbers) {
+            auto happy = HappyNumber(num);
             answ.emplace_back(happy.is_happy());
         }
         std::ofstream out_stream(output_fn, std::ostream::out);

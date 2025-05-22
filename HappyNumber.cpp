@@ -6,7 +6,7 @@
 
 std::vector<int> Parser::get_data(std::istream &stream) {
     if (!stream.good()) {
-        std::cerr << "Parser got wrong stream" << std::endl;
+        throw std::range_error( "Parser got wrong stream" );
     }
     std::string line;
     std::vector<int> input;
@@ -25,7 +25,7 @@ int Parser::get_next(const std::string &line) {
     while (iss >> num) {
         buff.emplace_back(num);
     }
-    if (buff.size() > 1 ) throw std::runtime_error("ERROR! wrong file: parser got more than one number in line");
+    if (buff.size() != 1 ) throw std::runtime_error("ERROR! parser got wrong line:" + line);
     return buff[0];
 }
 
@@ -48,7 +48,6 @@ bool HappyNumber::is_happy() const {
     }
     return sum == 1;
 }
-
 
 void save_result(std::ostream& stream, std::vector<bool> &answ, const std::vector<int> &input) {
     if (!stream.good()) {

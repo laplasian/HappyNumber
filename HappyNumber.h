@@ -24,8 +24,6 @@ private:
     const int num;
 };
 
-std::vector<bool> calculate(std::vector<size_t> &input);
-
 void save_result(std::ostream& stream, std::vector<bool> &answ, const std::vector<int> &input);
 
 
