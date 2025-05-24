@@ -19,15 +19,13 @@ int main(int argc, char *argv[])
         std::ifstream in_stream(input_fn, std::ifstream::in);
         auto numbers = Parser::get_data(in_stream);
         in_stream.close();
-        std::vector<bool> answ = {};
-        for (auto num: numbers) {
-            auto happy = HappyNumber(num);
-            answ.emplace_back(happy.is_happy());
-        }
-        std::ofstream out_stream(output_fn, std::ostream::out);
-        save_result(out_stream, answ, numbers);
-        out_stream.close();
 
+        std::ofstream out_stream(output_fn, std::ostream::out);
+        if (!out_stream.good()) throw std::runtime_error("ERROR! bad stream");
+        for (auto num: numbers) {
+            out_stream << num << " - " << (HappyNumber(num).is_happy() ? "true" : "false") << std::endl;
+        }
+        out_stream.close();
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
         return -1;

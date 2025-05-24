@@ -1,5 +1,6 @@
 #ifndef HAPPYNUMBER_H
 #define HAPPYNUMBER_H
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -9,22 +10,16 @@ class Parser {
 public:
     Parser() = delete;
     static std::vector<int> get_data(std::istream& stream);
-private:
-    static int get_next(const std::string& line);
 };
-
 
 class HappyNumber {
 public:
-    explicit HappyNumber(int num);
+    explicit HappyNumber(int num): num(num) { if (num < 0) throw std::invalid_argument("ERROR! wrong number"); };
     ~HappyNumber() = default;
 
     bool is_happy() const;
 private:
     const int num;
 };
-
-void save_result(std::ostream& stream, std::vector<bool> &answ, const std::vector<int> &input);
-
 
 #endif //HAPPYNUMBER_H

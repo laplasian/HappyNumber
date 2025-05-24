@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
 
 // TEST Parser
 TEST(Parser, Valid) {
-    std::istringstream input("1\n2\n3\n4\n5\n6\n7\n8\n9");
+    std::istringstream input("1 2\n3\n4\n5\n6 7\n8\n9");
     std::vector<int> expected = {1,2,3,4,5,6,7,8,9};
     EXPECT_EQ(Parser::get_data(input), expected);
 }
@@ -25,32 +25,9 @@ TEST(Parser, LineWithLetters) {
     EXPECT_THROW(Parser::get_data(input), std::runtime_error);
 }
 
-TEST(Parser, LineWithManyNumbers) {
-    std::istringstream input("1 2");
-    EXPECT_THROW(Parser::get_data(input), std::runtime_error);
-}
-
-// TEST SaveResult
-TEST(SaveResult, OutputMatchesExpected) {
-    std::vector<int> input = {1, 2, 3};
-    std::vector<bool> answ = {true, false, true};
-    std::ostringstream output;
-    save_result(output, answ, input);
-    std::string expected = "1 - true\n2 - false\n3 - true\n";
-    EXPECT_EQ(output.str(), expected);
-}
-
-TEST(SaveResult, BadStreamThrows) {
-    std::vector<int> input = {1};
-    std::vector<bool> answ = {true};
-    std::ostringstream output;
-    output.setstate(std::ios::badbit);
-    EXPECT_THROW(save_result(output, answ, input), std::runtime_error);
-}
-
 // TEST HappyNumber
 TEST(HappyNumberTest, NegativeThrows) {
-    EXPECT_THROW(HappyNumber(-1), std::runtime_error);
+    EXPECT_THROW(HappyNumber(-1), std::invalid_argument);
 }
 
 TEST(HappyNumberTest, KnownHappy) {

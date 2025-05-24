@@ -1,62 +1,38 @@
 #include "HappyNumber.h"
 
-#include <complex>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <unordered_set>
+
+static int sum_of_squares_of_digits(int n) {
+    int sum = 0;
+    while (n > 0) {
+        int digit = n % 10;
+        sum += digit * digit;
+        n /= 10;
+    }
+    return sum;
+}
 
 std::vector<int> Parser::get_data(std::istream &stream) {
-    if (!stream.good()) {
-        throw std::range_error( "Parser got wrong stream" );
-    }
-    std::string line;
-    std::vector<int> input;
-
-    while (std::getline(stream, line)) {
-        if (!line.empty()) input.emplace_back(get_next(line));
-    }
-
-    return input;
-}
-
-int Parser::get_next(const std::string &line) {
-    std::istringstream iss(line);
+    std::vector<int> numbers;
     int num;
-    std::vector<int> buff {};
-    while (iss >> num) {
-        buff.emplace_back(num);
+    std::string line;
+    while (std::getline(stream, line)) {
+        std::istringstream iss(line);
+        while (iss >> num) numbers.push_back(num);
+        if ((iss.rdstate() & std::ios::failbit) && !(iss.rdstate() & std::ios::eofbit)) throw std::runtime_error("ERROR reading from file");
     }
-    if (buff.size() != 1 ) throw std::runtime_error("ERROR! parser got wrong line:" + line);
-    return buff[0];
-}
-
-HappyNumber::HappyNumber(int num): num(num) {
-    if (num < 0) throw std::runtime_error("ERROR! wrong number");
+    return numbers;
 }
 
 bool HappyNumber::is_happy() const {
-    int sum = num;
-    int count = 0;
-    while (sum != 1) {
-        if (count > MAX_N) return false;
-        int buff = 0;
-        for (int i = 0; i <= std::log10(sum); i++) {
-            int digit = static_cast<int>((sum / std::pow(10, i))) % 10;
-            buff += digit * digit;
-        }
-        sum = buff;
-        count++;
+    int n = num;
+    std::unordered_set<int> seen;
+    while (n != 1 && seen.find(n) == seen.end()) {
+        seen.insert(n);
+        n = sum_of_squares_of_digits(n);
     }
-    return sum == 1;
+    return n == 1;
 }
-
-void save_result(std::ostream& stream, std::vector<bool> &answ, const std::vector<int> &input) {
-    if (!stream.good()) {
-        throw std::runtime_error("ERROR! bad stream");
-    }
-    for (int i = 0; i < input.size(); i++) {
-        std::string result = answ[i] ? "true" : "false";
-        stream << input[i] << " - " << result << std::endl;
-    }
-}
-
-
